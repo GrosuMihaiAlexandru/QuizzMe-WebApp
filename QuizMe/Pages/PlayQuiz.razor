@@ -22,10 +22,10 @@ else if (!startedQuiz)
 {
     <div class="container rounded" style="margin-left: auto; border-style:solid; border-width:3px">
         <div class="container" style="text-align:center"> 
-            <h1>Quiz name</h1>
+            <h1>@quiz.Name</h1>
             <div class="rounded" style="border-style:solid; border-width:1px "></div>
             <img src="https://i.ytimg.com/vi/k1INRDgxc5o/maxresdefault.jpg" alt="Quiz Image" style="width:80%; padding:15px">
-            <p align="justify"> Quiz description QuizQuiz description Quiz description Quiz description Quiz descriptionQuiz description Quiz description Quiz description Quiz descriptionQuiz description Quiz description Quiz description Quiz descriptionQuiz description Quiz description Quiz description Quiz descriptionQuiz description Quiz description Quiz description Quiz descriptionQuiz description Quiz description Quiz description Quiz descriptionQuiz description Quiz description Quiz description Quiz descriptionQuiz description Quiz description Quiz description Quiz description description Quiz description Quiz description Quiz description Quiz description Quiz description Quiz description Quiz description Quiz description Quiz description Quiz description Quiz description Quiz description Quiz description Quiz description</p>
+            <p align="justify"> @quiz.Description</p>
             <button class="btn btn-secondary btn-lg" @onclick="StartQuiz" style="margin: 0px 0px 10px 5px;" id="button-addon2">Start Quiz</button>
 
         </div>
@@ -44,16 +44,61 @@ else
                     <div class="row" style="">
                         <button class="col border" style="height:100px; @("background-color:" + (0 == currentQuestion.CorrectAnswerIndex ? "green": (answerIndex == 0 ? "red" : "") ))">
                             <h2> @currentQuestion.Answers[0] </h2>
+                            @if (currentQuestion.CorrectAnswerIndex == 0)
+                            {
+                                <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
+                            }
+                            else
+                            {
+                                if (answerIndex == 0)
+                                {
+                                    <span class="oi oi-x" style="color:white; margin:auto margin-right:0"></span>
+                                }
+                            }
+
                         </button>
                         <button class="col border" style="height:100px; @("background-color:" + (1 == currentQuestion.CorrectAnswerIndex ? "green": (answerIndex == 1 ? "red" : "") ))">
                             <h2> @currentQuestion.Answers[1] </h2>
+                            @if (currentQuestion.CorrectAnswerIndex == 1)
+                            {
+                                <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
+                            }
+                            else
+                            {
+                                if (answerIndex == 1)
+                                {
+                                    <span class="oi oi-x" style="color:white; margin:auto margin-right:0"></span>
+                                }
+                            }
                         </button>                    
                         <div class="w-100"></div>
                         <button class="col border" style="height:100px; @("background-color:" + (2 == currentQuestion.CorrectAnswerIndex ? "green": (answerIndex == 2 ? "red" : "") ))">
                             <h2> @currentQuestion.Answers[2] </h2>
+                            @if (currentQuestion.CorrectAnswerIndex == 2)
+                            {
+                                <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
+                            }
+                            else
+                            {
+                                if (answerIndex == 2)
+                                {
+                                    <span class="oi oi-x" style="color:white; margin:auto margin-right:0"></span>
+                                }
+                            }
                         </button>
                         <button class="col border" style="height:100px; @("background-color:" + (3 == currentQuestion.CorrectAnswerIndex ? "green": (answerIndex == 3 ? "red" : "") ))">
                             <h2> @currentQuestion.Answers[3] </h2>
+                            @if (currentQuestion.CorrectAnswerIndex == 3)
+                            {
+                                <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
+                            }
+                            else
+                            {
+                                if (answerIndex == 3)
+                                {
+                                    <span class="oi oi-x" style="color:white; margin:auto margin-right:0"></span>
+                                }
+                            }
                         </button>
                     </div>
 
@@ -117,7 +162,7 @@ else
         questions.Add(new Question("Question 3", "", new List<string>() { "A", "B", "C", "D" }, 1));
         questions.Add(new Question("Question 4", "", new List<string>() { "A", "B", "C", "D" }, 1));
 
-        quiz = new Quiz("test", "test quizz", questions);
+        quiz = new Quiz("Social credit score test", "test quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizz", questions);
         /*try
         {
         var response = await Http.GetAsync(Endpoints.TestEndpoint);
