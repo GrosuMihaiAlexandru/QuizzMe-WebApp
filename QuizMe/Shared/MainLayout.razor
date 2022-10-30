@@ -1,0 +1,33 @@
+﻿@inherits LayoutComponentBase
+
+<div class="page">
+
+    <main>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand font-weight-bold" style="font-size:40px" asp-area="" asp-page="/Index">QuizMe</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <ul class="navbar-nav flex-grow-1">
+                        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                            <span class="oi oi-play-circle " aria-hidden="true"></span> <b>Play</b>
+                        </NavLink>
+                        <NavLink class="nav-link" href="counter">
+                            <span class="oi oi-plus" aria-hidden="true"></span> <b> Create Quiz</b>
+                        </NavLink>
+                        <NavLink class="nav-link" href="fetchdata">
+                            <span class="oi" aria-hidden="true"></span> <b>About</b>
+                        </NavLink>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>

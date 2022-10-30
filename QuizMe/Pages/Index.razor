@@ -1,0 +1,47 @@
+﻿@page "/"
+@inject HttpClient Http
+
+<PageTitle>Index</PageTitle>
+
+<p role="status">@message</p>
+
+
+<div class="container rounded" style="width: 360px; margin-left: auto; border-style:solid; border-width:3px">
+    <div class="input-group mb-3" style=" top:8px; margin: auto; padding: 10px 5px 10px 5px; ">
+        <input asp-for="QuizCode" class="form-control rounded" placeholder="Enter a quiz code" aria-label="Enter a quiz code">
+        <div></div>
+        <button class="btn btn-outline-secondary rounded" @onclick="JoinButton" style="margin: 0px 0px 0px 5px" id="button-addon2">Join</button>
+    </div>
+</div>
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+@code
+{
+    private string message = "";
+
+    public async void JoinButton()
+    {
+        try
+        {
+            var response = await Http.GetAsync(Endpoints.TestEndpoint);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Request Message Information:- \n\n" + response.RequestMessage + "\n");
+                Console.WriteLine("Response Message Header \n\n" + response.Content.Headers + "\n");
+                // Get the response
+                var customerJsonString = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Your response data is: " + customerJsonString);
+                message = customerJsonString;
+                StateHasChanged();
+            }
+
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+
+}
