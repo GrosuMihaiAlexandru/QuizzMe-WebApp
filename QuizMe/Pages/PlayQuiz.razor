@@ -103,7 +103,7 @@ else
                     </div>
 
                 </div>
-        
+                <button class="btn btn-secondary btn-lg" style="width = 80%; padding:20px; margin-bottom:25px" @onclick="NextQ"> Next Question</button>
             </div>
         </div>
     }
@@ -146,8 +146,7 @@ else
 
     private bool startedQuiz = false;
 
-    private Question currentQuestion;
-
+    private Question? currentQuestion;
     private int currentQuestionIndex;
 
     private bool questionAnswered = false;
@@ -192,7 +191,8 @@ else
         }
 
         answerIndex = -1;
-        currentQuestion = quiz.Questions[0];
+        currentQuestionIndex = 0;
+        currentQuestion = quiz.Questions[currentQuestionIndex];
         startedQuiz = true;
     }
 
@@ -205,5 +205,12 @@ else
             // NU MERGE
             await SoundPlayer.Play("rightAnswer.mp3");
         }
+    }
+
+    public void NextQuestionClicked()
+    {
+        answerIndex = -1;
+        currentQuestionIndex++;
+            currentQuestion = quiz?.Questions[currentQuestionIndex];
     }
 }
