@@ -203,12 +203,9 @@ else
             if (response.IsSuccessStatusCode)
             {
                 alertNoCodeFound = false;
-                Console.WriteLine("Request Message Information:- \n\n" + response.RequestMessage + "\n");
-                Console.WriteLine("Response Message Header \n\n" + response.Content.Headers + "\n");
-                // Get the response
-                var customerJsonString = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("Your response data is: " + customerJsonString);
-                NavManager.NavigateTo("/PlayQuiz");
+
+                quiz = await response.Content.ReadFromJsonAsync<Quiz>();
+                Console.WriteLine(quiz);
             }
             else
             {

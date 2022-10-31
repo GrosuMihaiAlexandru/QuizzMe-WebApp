@@ -7,12 +7,12 @@
         public List<string> Answers { get; set; }
         public int CorrectAnswerIndex { get; set; }
 
-        public Question(string body, string image, List<string> answers, int correctAnswer)
+        public Question(string body, string image, List<string> answers, int correctAnswerIndex)
         {
             Body = body;
             Image = image;
             Answers = answers;
-            CorrectAnswerIndex = correctAnswer;
+            CorrectAnswerIndex = correctAnswerIndex;
         }
     }
 }
