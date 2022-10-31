@@ -7,20 +7,36 @@
 
 <PageTitle>Index</PageTitle>
 
+@if (quiz != null)
+{
+<style>
+    body {
+        background-repeat:no-repeat;
+        background-attachment:fixed;
+        background-size:cover;
+        background-image: url('https://cdn.cfr.org/sites/default/files/styles/immersive_image_3_2_desktop_2x/public/image/2018/03/CCP.jpg.webp');
+    }
+</style>
+}
 
 @if (quiz == null)
 {
     <div class="container rounded" style="width: 360px; margin-left: auto; border-style:solid; border-width:3px">
         <div class="input-group mb-3" style=" top:8px; margin: auto; padding: 10px 5px 10px 5px; ">
-            <input asp-for="QuizCode" class="form-control rounded" placeholder="Enter a quiz code" aria-label="Enter a quiz code">
+            <input asp-for="QuizCode" class="form-control rounded" placeholder="Enter a quiz code" aria-label="Enter a quiz code" @bind="@joinCode" @oninput="@((e) => { joinCode = (string)e.Value;})">
             <div></div>
             <button class="btn btn-outline-secondary rounded" @onclick="JoinButton" style="margin: 0px 0px 0px 5px" id="button-addon2">Join</button>
         </div>
     </div>
+
+    if (alertNoCodeFound)
+    {
+        <SurveyPrompt Title="Error"/>
+    }
 }
 else if (!startedQuiz)
 {
-    <div class="container rounded" style="margin-left: auto; border-style:solid; border-width:3px">
+    <div class="container rounded" style="background-color:white; margin-left: auto; border-style:solid; border-width:3px">
         <div class="container" style="text-align:center"> 
             <h1>@quiz.Name</h1>
             <div class="rounded" style="border-style:solid; border-width:1px "></div>
@@ -35,16 +51,20 @@ else
 {
     if (answerIndex >= 0)
     {
-        <div class="container rounded" style="margin-left: auto; border-style:solid; border-width:3px">
+        <div class="container rounded" style="background-color:@backgroundColor; margin-left: auto; border-color:secondaryColor; border-style:solid; border-width:3px">
             <div class="container" style="text-align:center">
-                <h1>@currentQuestion.Body</h1>
-                <img src="@currentQuestion.Image" alt="Quiz Image" style="max-height:400px; height:auto; width:auto width:80%; padding:15px">
+
+                <div class="progress" style="margin:10px">
+                    <div class="progress-bar" role="progressbar" style="background-color:@secondaryColor; width: @CompletePercentage%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"> <b> @(currentQuestionIndex + 1) of @quiz.Questions.Count </b></div>
+                </div>
+                <h1> @currentQuestion?.Body</h1>
+                <img src="@currentQuestion?.Image" alt="Quiz Image" style="max-height:400px; height:auto; width:auto width:80%; padding:15px">
             
                 <div class="container" style="padding-bottom:20px">
                     <div class="row" style="">
-                        <button class="col border" style="height:100px; @("background-color:" + (0 == currentQuestion.CorrectAnswerIndex ? "green": (answerIndex == 0 ? "red" : "") ))">
-                            <h2> @currentQuestion.Answers[0] </h2>
-                            @if (currentQuestion.CorrectAnswerIndex == 0)
+                        <button class="col border" style="height:100px; @("background-color:" + (0 == currentQuestion?.CorrectAnswerIndex ? "green": (answerIndex == 0 ? "red" : "") ))">
+                            <h2> @currentQuestion?.Answers[0] </h2>
+                            @if (currentQuestion?.CorrectAnswerIndex == 0)
                             {
                                 <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
                             }
@@ -57,9 +77,9 @@ else
                             }
 
                         </button>
-                        <button class="col border" style="height:100px; @("background-color:" + (1 == currentQuestion.CorrectAnswerIndex ? "green": (answerIndex == 1 ? "red" : "") ))">
-                            <h2> @currentQuestion.Answers[1] </h2>
-                            @if (currentQuestion.CorrectAnswerIndex == 1)
+                        <button class="col border" style="height:100px; @("background-color:" + (1 == currentQuestion?.CorrectAnswerIndex ? "green": (answerIndex == 1 ? "red" : "") ))">
+                            <h2> @currentQuestion?.Answers[1] </h2>
+                            @if (currentQuestion?.CorrectAnswerIndex == 1)
                             {
                                 <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
                             }
@@ -72,9 +92,9 @@ else
                             }
                         </button>                    
                         <div class="w-100"></div>
-                        <button class="col border" style="height:100px; @("background-color:" + (2 == currentQuestion.CorrectAnswerIndex ? "green": (answerIndex == 2 ? "red" : "") ))">
-                            <h2> @currentQuestion.Answers[2] </h2>
-                            @if (currentQuestion.CorrectAnswerIndex == 2)
+                        <button class="col border" style="height:100px; @("background-color:" + (2 == currentQuestion?.CorrectAnswerIndex ? "green": (answerIndex == 2 ? "red" : "") ))">
+                            <h2> @currentQuestion?.Answers[2] </h2>
+                            @if (currentQuestion?.CorrectAnswerIndex == 2)
                             {
                                 <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
                             }
@@ -86,9 +106,9 @@ else
                                 }
                             }
                         </button>
-                        <button class="col border" style="height:100px; @("background-color:" + (3 == currentQuestion.CorrectAnswerIndex ? "green": (answerIndex == 3 ? "red" : "") ))">
-                            <h2> @currentQuestion.Answers[3] </h2>
-                            @if (currentQuestion.CorrectAnswerIndex == 3)
+                        <button class="col border" style="height:100px; @("background-color:" + (3 == currentQuestion?.CorrectAnswerIndex ? "green": (answerIndex == 3 ? "red" : "") ))">
+                            <h2> @currentQuestion?.Answers[3] </h2>
+                            @if (currentQuestion?.CorrectAnswerIndex == 3)
                             {
                                 <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
                             }
@@ -103,45 +123,57 @@ else
                     </div>
 
                 </div>
-                <button class="btn btn-secondary btn-lg" style="width = 80%; padding:20px; margin-bottom:25px" @onclick="NextQuestionClicked"> Next Question</button>
+                <div class="container">
+                    <button class="btn btn-secondary btn-lg" style="width = 80%; padding:20px; margin-bottom:10px; margin-right:0px;" @onclick="NextQuestionClicked"> Next Question</button>
+                </div>
             </div>
         </div>
     }
     else
     {
-
-    <div class="container rounded" style="margin-left: auto; border-style:solid; border-width:3px">
-        <div class="container" style="text-align:center">
-            <h1>@currentQuestion.Body</h1>
-            <img src="@currentQuestion.Image" alt="Quiz Image" style="max-height:400px; height:auto; width:auto width:80%; padding:15px">
-            
-            <div class="container" style="padding-bottom:20px">
-                <div class="row" style="">
-                    <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(0))">
-                        <h2> @currentQuestion.Answers[0] </h2>
-                    </button>
-                    <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(1))">
-                        <h2> @currentQuestion.Answers[1] </h2>
-                    </button>                    
-                    <div class="w-100"></div>
-                    <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(2))">
-                        <h2> @currentQuestion.Answers[2] </h2>
-                    </button>
-                    <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(3))">
-                        <h2> @currentQuestion.Answers[3] </h2>
-                    </button>
+        <div class="container rounded" style="background-color:@backgroundColor; margin-left: auto; border-color:@secondaryColor; border-style:solid; border-width:3px">
+            <div class="container" style="text-align:center">
+                <div class="progress" style="margin:10px">
+                    <div class="progress-bar" role="progressbar" style="background-color:@secondaryColor; width: @CompletePercentage%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"> <b> @(currentQuestionIndex + 1) of @quiz.Questions.Count </b></div>
                 </div>
+                <h1>@currentQuestion?.Body</h1>
+                <img src="@currentQuestion?.Image" alt="Quiz Image" style="max-height:400px; height:auto; width:auto width:80%; padding:15px">
+            
+                <div class="container" style="padding-bottom:20px">
+                    <div class="row" style="">
+                        <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(0))">
+                            <h2> @currentQuestion?.Answers[0] </h2>
+                        </button>
+                        <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(1))">
+                            <h2> @currentQuestion?.Answers[1] </h2>
+                        </button>                    
+                        <div class="w-100"></div>
+                        <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(2))">
+                            <h2> @currentQuestion?.Answers[2] </h2>
+                        </button>
+                        <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(3))">
+                            <h2> @currentQuestion?.Answers[3] </h2>
+                        </button>
+                    </div>
 
-            </div>
+                </div>
         
+            </div>
         </div>
-    </div>
     }
 
 }
 
 @code
 {
+    // Theme
+    private string primaryColor = "#610E0B";
+    private string secondaryColor = "#610E0B";
+    private string backgroundColor = "#E3BAB9";
+
+    private string joinCode = "";
+    private bool alertNoCodeFound = false;
+
     private Quiz? quiz = null;
 
     private bool startedQuiz = false;
@@ -153,34 +185,42 @@ else
     private bool answerIsCorrect = false;
     private int answerIndex = -1;
 
-    public void JoinButton()
+
+    public async void JoinButton()
     {
-        List<Question> questions = new List<Question>();
-        questions.Add(new Question("How many children can a chinese have?", "https://ih1.redbubble.net/image.2961457088.6670/fposter,small,wall_texture,product,750x1000.jpg", new List<string>() { "1", "3", "2", "As many as possible" }, 0));
-        questions.Add(new Question("Question 2", "", new List<string>() { "A", "B", "C", "D" }, 1));
-        questions.Add(new Question("Question 3", "", new List<string>() { "A", "B", "C", "D" }, 1));
-        questions.Add(new Question("Question 4", "", new List<string>() { "A", "B", "C", "D" }, 1));
+        //List<Question> questions = new List<Question>();
+        //questions.Add(new Question("How many children should one chinese family have?", "https://ih1.redbubble.net/image.2961457088.6670/fposter,small,wall_texture,product,750x1000.jpg", new List<string>() { "1", "3", "2", "As many as possible" }, 0));
+        //questions.Add(new Question("Question 2", "", new List<string>() { "A", "B", "C", "D" }, 1));
+        //questions.Add(new Question("Question 3", "", new List<string>() { "A", "B", "C", "D" }, 1));
+        //questions.Add(new Question("Question 4", "", new List<string>() { "A", "B", "C", "D" }, 1));
 
-        quiz = new Quiz("Social credit score test", "test quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizz", questions);
-        /*try
+        // quiz = new Quiz("Social credit score test", "test quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizz", questions);
+        try
         {
-        var response = await Http.GetAsync(Endpoints.TestEndpoint);
+            var response = await Http.GetAsync(Endpoints.TestEndpoint + joinCode);
 
-        if (response.IsSuccessStatusCode)
+            Console.WriteLine(joinCode);
+            if (response.IsSuccessStatusCode)
+            {
+                alertNoCodeFound = false;
+                Console.WriteLine("Request Message Information:- \n\n" + response.RequestMessage + "\n");
+                Console.WriteLine("Response Message Header \n\n" + response.Content.Headers + "\n");
+                // Get the response
+                var customerJsonString = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Your response data is: " + customerJsonString);
+                NavManager.NavigateTo("/PlayQuiz");
+            }
+            else
+            {
+                Console.WriteLine("Bad Request");
+                alertNoCodeFound = true;
+            }
+            StateHasChanged();
+        }
+        catch(Exception e)
         {
-        Console.WriteLine("Request Message Information:- \n\n" + response.RequestMessage + "\n");
-        Console.WriteLine("Response Message Header \n\n" + response.Content.Headers + "\n");
-        // Get the response
-        var customerJsonString = await response.Content.ReadAsStringAsync();
-        Console.WriteLine("Your response data is: " + customerJsonString);
-        NavManager.NavigateTo("/PlayQuiz");
-    }
-
-    }
-    catch(Exception e)
-    {
-    Console.WriteLine(e);
-    }*/
+            Console.WriteLine(e);
+        }
     }
 
     public void StartQuiz()
@@ -200,17 +240,26 @@ else
     {
         answerIndex = answer;
 
-        if (answerIndex == currentQuestion.CorrectAnswerIndex)
+        if (answerIndex == currentQuestion?.CorrectAnswerIndex)
         {
             // NU MERGE
             await SoundPlayer.Play("audio/rightAnswer.mp3");
         }
+        else
+        {
+            await SoundPlayer.Play("audio/wrongAnswer.mp3");
+        }
+        StateHasChanged();
+        Console.WriteLine(CompletePercentage);
     }
 
     public void NextQuestionClicked()
     {
+
         answerIndex = -1;
         currentQuestionIndex++;
-            currentQuestion = quiz?.Questions[currentQuestionIndex];
+        currentQuestion = quiz?.Questions[currentQuestionIndex];
     }
+
+    private int CompletePercentage { get => (int)((currentQuestionIndex + 1f) / quiz.Questions.Count * 100); }
 }
