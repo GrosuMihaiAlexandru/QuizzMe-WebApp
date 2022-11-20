@@ -1,0 +1,148 @@
+﻿@page "/createQuiz"
+@using Models
+@using QuizMe.Utility
+<PageTitle>QuizzMe Create</PageTitle>
+
+
+
+<div class="container" style="background-color:whitesmoke; position: fixed; left: 0; top: 86px; width:300px;  height:100%;">
+    <ul class="list-group" style="padding-top:10px; padding-bottom:10px; overflow-y: auto; max-height: 90%;"
+        ondragover="event.preventDefault();" ondragstart="event.dataTransfer.SetData('', event.target.id)">
+        @foreach (var question in questions.OrderBy(x => x.Index))
+        {
+            <li class="list-group-item" style="@(question.Index == currentQuestion.Index ? "background-color:lightcyan;" : "") left:0px;" @ondrop="()=>HandleQuestionDrop(question)" @key="question">
+                <button @ondragleave="@(()=> {question.IsDragOver = false;})"
+                    @ondragenter="@(()=>{question.IsDragOver = true;})"
+                    style="background:none; border:none; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; 
+                    @(question.IsDragOver?"border-style: solid none none none; border-color:red;":"")"
+                    @ondragstart="() => draggingQuestion = question"
+                    @ondragend="()=> draggingQuestion = null" draggable="true"
+                    @onclick="@(() => SelectQuestion(question.Index))">
+                    <button class="btn btn-xs" style="left:-20px top:-3px; width:10px" @onclick="() => HandleQuestionDelete(question.Index)">
+                        <span class="oi oi-trash" style="left:-7px;"></span>
+                    </button>
+                        @(question.Index + 1). @question.Question.Body
+                </button>
+            </li>
+        }
+        <li class="list-group-item" style="text-align:center;">
+            <button @onclick="OnAddQuestionButton"> Add question </button>
+        </li>
+    </ul>
+</div>
+
+@if (currentQuestion != null)
+{
+    <div class="container rounded" style="background-color:@backgroundColor; margin-left: auto; border-color:@secondaryColor; border-style:solid; border-width:3px">
+        <div class="container" style="text-align:center">
+            <h1>@currentQuestion?.Question.Body</h1>
+            <img src="@currentQuestion?.Question.Image" alt="Quiz Image" style="max-height:400px; height:auto; width:auto; width:80%; padding:15px">
+
+            <div class="container" style="padding-bottom:20px">
+                <div class="row" style="">
+                    <button class="col border container" style="pointer-events:none; height:100px">
+                        <h2 style="width:100%">
+                            <input type="text" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
+                               @bind-value="@currentQuestion.Question.Answers[0]" />
+                        </h2>
+                        <div style="pointer-events:all" class="oi @(currentQuestion.Question.CorrectAnswerIndex == 0 ? "oi-check" : "oi-x")"
+                            @onclick="() => SetRightAnswer(0)" />
+                    </button>
+                    <button class="col border container" style="pointer-events:none; height:100px">
+                        <h2>
+                            <input type="text" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
+                               @bind-value="@currentQuestion.Question.Answers[1]" />
+                        </h2>
+                        <div style="pointer-events:all"  class="oi @(currentQuestion.Question.CorrectAnswerIndex == 1 ? "oi-check" : "oi-x")"
+                            @onclick="() => SetRightAnswer(1)" />
+                    </button>
+                    <div class="w-100"></div>
+                    <button class="col border container" style="pointer-events:none; height:100px">
+                        <h2>
+                            <input type="text" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
+                               @bind-value="@currentQuestion.Question.Answers[2]" />
+                        </h2>
+                        <div style="pointer-events:all" class="oi @(currentQuestion.Question.CorrectAnswerIndex == 2 ? "oi-check" : "oi-x")"
+                            @onclick="() => SetRightAnswer(2)" />
+                    </button>
+                    <button class="col border container" style="pointer-events:none; height:100px">
+                        <h2>
+                            <input type="text" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;;"
+                               @bind-value="@currentQuestion.Question.Answers[3]" />
+                        </h2>
+                        <div style="pointer-events:all" class="oi @(currentQuestion.Question.CorrectAnswerIndex == 3 ? "oi-check" : "oi-x")"
+                            @onclick="() => SetRightAnswer(3)" />
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+}
+
+@code {
+    private Quiz quiz;
+
+    private string primaryColor = "#610E0B";
+    private string secondaryColor = "#610E0B";
+    private string backgroundColor = "#E3BAB9";
+
+    public List<EditQuestion> questions = new List<EditQuestion>();
+
+    private EditQuestion currentQuestion;
+
+    private EditQuestion? draggingQuestion;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    private void OnAddQuestionButton()
+    {
+        int index = questions.Count;
+        questions.Add(new EditQuestion(index));
+
+        if (currentQuestion == null)
+            currentQuestion = questions[0];
+    }
+
+    private void HandleQuestionDelete(int index)
+    {
+        questions.RemoveAt(index);
+
+        for (int i = index; i < questions.Count; i++)
+        {
+            questions[i].Index--;
+        }
+    }
+
+    private void HandleQuestionDrop(EditQuestion landingQuestion)
+    {
+        //landing model -> where the drop happened
+        if (draggingQuestion is null) return;
+        int originalOrderLanding = landingQuestion.Index; //keep the original order for later
+                                                          //increase model under landing one by 1
+        questions.Where(x => x.Index >= landingQuestion.Index).ToList().ForEach(x => x.Index++);
+        draggingQuestion.Index = originalOrderLanding;//replace landing model
+        int i = 0;
+        foreach (var question in questions.OrderBy(x => x.Index).ToList())
+        {
+            question.Index = i++;//keep the numbers from 0 to size-1
+            question.IsDragOver = false;//remove drag over.
+        }
+    }
+
+    private void SelectQuestion(int index)
+    {
+        currentQuestion = questions[index];
+    }
+
+    private void SetRightAnswer(int index)
+    {
+        currentQuestion.Question.CorrectAnswerIndex = index;
+        Console.WriteLine(currentQuestion.Question.CorrectAnswerIndex);
+    }
+
+}

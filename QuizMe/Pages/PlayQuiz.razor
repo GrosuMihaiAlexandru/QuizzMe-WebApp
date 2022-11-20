@@ -5,7 +5,7 @@
 @inject NavigationManager NavManager
 @inject ISoundPlayer SoundPlayer
 
-<PageTitle>Index</PageTitle>
+<PageTitle>QuizzMe Play</PageTitle>
 
 @if (quiz != null)
 {
@@ -137,7 +137,7 @@ else
                     <div class="progress-bar" role="progressbar" style="background-color:@secondaryColor; width: @CompletePercentage%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"> <b> @(currentQuestionIndex + 1) of @quiz.Questions.Count </b></div>
                 </div>
                 <h1>@currentQuestion?.Body</h1>
-                <img src="@currentQuestion?.Image" alt="Quiz Image" style="max-height:400px; height:auto; width:auto width:80%; padding:15px">
+                <img src="@currentQuestion?.Image" alt="Quiz Image" style="max-height:400px; height:auto; width:auto; width:80%; padding:15px">
             
                 <div class="container" style="padding-bottom:20px">
                     <div class="row" style="">
