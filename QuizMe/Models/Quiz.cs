@@ -7,7 +7,8 @@
         public string Name { get; set; }
         public string PrimaryColor { get; set; }
         public string SecondaryColor { get; set; }
-        public string BackgroundColor { get; set; }
+        public string BackgroundImage { get; set; }
+        public string MainImage { get; set; }
         public string Description { get; set; }
         public List<Question> Questions { get; set; }
 
