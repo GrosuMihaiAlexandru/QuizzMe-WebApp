@@ -296,7 +296,8 @@
             quizQuestions.Add(question.Question);
         }
 
-        Quiz quiz = new Quiz(quizName, quizDescription, quizQuestions);
+        Quiz quiz = new Quiz(quizName, quizDescription, primaryColor, secondaryColor, quizQuestions);
+
     }
 
     private void OnWarningDialogClose(bool accepted)
