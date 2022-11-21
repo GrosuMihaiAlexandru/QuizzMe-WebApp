@@ -47,16 +47,20 @@ else
                     <div class="row" style="">
                         <button class="col border container" style="height:100px">
                             <h2> @quiz.Questions[i]?.Answers[0] </h2>
+                            <h2> @(1.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[0] / quiz.NoOfSubmittedAnswers) </h2>
                         </button>
                         <button class="col border container" style="height:100px">
                             <h2> @quiz.Questions[i]?.Answers[1] </h2>
+                            <h2> @(1.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[1] / quiz.NoOfSubmittedAnswers) </h2>
                         </button>
                         <div class="w-100"></div>
                         <button class="col border container" style="height:100px">
                             <h2> @quiz.Questions[i]?.Answers[2] </h2>
+                            <h2> @(1.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[2] / quiz.NoOfSubmittedAnswers) </h2>
                         </button>
                         <button class="col border container" style="height:100px">
                             <h2> @quiz.Questions[i]?.Answers[3] </h2>
+                            <h2> @(1.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[3] / quiz.NoOfSubmittedAnswers) </h2>
                         </button>
                     </div>
 
@@ -71,7 +75,7 @@ else
 
     private string joinCode = "";
     private bool alertNoCodeFound = false;
-    private Quiz? quiz = null;
+    private QuizForStatistics? quiz = null;
 
     public async void LoadStatistics()
     {
@@ -84,14 +88,14 @@ else
         // quiz = new Quiz("Social credit score test", "test quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizz", questions);
         try
         {
-            var response = await Http.GetAsync(Endpoints.TestEndpoint + joinCode);
+            var response = await Http.GetAsync(Endpoints.QuizStatisticsEndpoint + joinCode);
 
             Console.WriteLine(joinCode);
             if (response.IsSuccessStatusCode)
             {
                 alertNoCodeFound = false;
 
-                quiz = await response.Content.ReadFromJsonAsync<Quiz>();
+                quiz = await response.Content.ReadFromJsonAsync<QuizForStatistics>();
                 Console.WriteLine(quiz);
             }
             else
