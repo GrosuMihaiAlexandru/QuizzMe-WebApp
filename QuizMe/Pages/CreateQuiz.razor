@@ -31,12 +31,29 @@
     </ul>
 </div>
 
+<div class="container" style="background-color:whitesmoke; position: fixed; right: 0; top: 86px; width:290px;  height:100%;">
+    <h3 style="text-align:center; margin-top:10px;"> Quiz Settings</h3>
+    <div class="form-group">
+        <label for="exampleInputEmail1">Name</label>
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter name">
+     </div>
+
+
+</div>
+
 @if (currentQuestion != null)
 {
     <div class="container rounded" style="background-color:@backgroundColor; margin-left: auto; border-color:@secondaryColor; border-style:solid; border-width:3px">
         <div class="container" style="text-align:center">
-            <h1>@currentQuestion?.Question.Body</h1>
-            <img src="@currentQuestion?.Question.Image" alt="Quiz Image" style="max-height:400px; height:auto; width:auto; width:80%; padding:15px">
+            <h1>
+                <textarea type="text" style="margin-top:10px; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
+                   @bind="@currentQuestion.Question.Body"
+                   @bind:event="oninput"/>
+            </h1>
+            <div class="container" style="background-color:ActiveBorder; width:480px; height:270px; margin-bottom:10px">
+                <img src="@currentQuestion?.Question.Image" alt="Quiz Image" style="object-fit:scale-down; max-height:400px; max-width:700px; height:auto; width:auto; padding:15px">
+
+            </div>
 
             <div class="container" style="padding-bottom:20px">
                 <div class="row" style="">
