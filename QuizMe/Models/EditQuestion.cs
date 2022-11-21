@@ -1,5 +1,7 @@
 ﻿namespace QuizMe.Models
 {
+    public enum VerifyStatus { OK, MissingCorrectAnswer, MissingBody, MissingAnswers}
+
     public class EditQuestion
     {
         public Question Question { get; set; }
@@ -8,8 +10,31 @@
 
         public EditQuestion(int index)
         {
-            Question = new Question("Question body" + index + " jasd jasdjsa djsa", "", new List<string>() { "Add answer 1", "Add answer 2", "Add answer 3", "Add answer 4" }, -1);
+            Question = new Question("", "", new List<string>() { "", "", "", "" }, -1);
             Index = index;
+        }
+
+        public VerifyStatus VerifyQuestion()
+        {
+            if (Question.CorrectAnswerIndex == -1)
+            {
+                return VerifyStatus.MissingCorrectAnswer;
+            }
+
+            if (string.IsNullOrEmpty(Question.Body))
+            {
+                return VerifyStatus.MissingBody;
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                if (string.IsNullOrEmpty(Question.Answers[i]))
+                {
+                    return VerifyStatus.MissingAnswers;
+                }
+            }
+
+            return VerifyStatus.OK;
         }
     }
 }

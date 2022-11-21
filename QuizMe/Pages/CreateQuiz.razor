@@ -1,7 +1,7 @@
 ﻿@page "/createQuiz"
 @using Models
 @using QuizMe.Utility
-<PageTitle>QuizzMe Create</PageTitle>
+<PageTitle>QuizMe Create</PageTitle>
 
 
 
@@ -35,31 +35,63 @@
     <h3 style="text-align:center; margin-top:10px;"> Quiz Settings</h3>
     <div class="form-group">
         <label for="exampleInputEmail1">Name</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter name">
-     </div>
+        <input type="text" class="form-control" placeholder="Enter quiz name" @bind-value="quizName">
+    </div>
+    <div class="form-group">
+        <label style="margin-top:10px">Description</label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" rows="5" placeholder="Enter quiz description" @bind="quizDescription" @bind:event="oninput"></textarea>
+    </div>
+    <div class="form-group">
+        <label style="margin-top:10px">Primary Color</label>
+        <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="#333333" @bind-value="primaryColor">
+    </div>
+    <div class="form-group">
+        <label style="margin-top:10px">Secondary Color</label>
+        <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="#FFFFFF" @bind-value="secondaryColor">
+    </div>
+    <div class="container">
+        <label style="margin-top:10px">Main Image</label>
+        @if(!string.IsNullOrEmpty(backgroundImage))
+        {
+            <img src="@backgroundImage" style="width:180px; height:120px;"/>
+        }
+        <InputFile style="margin-top:10px" OnChange="@OnBackgroundImageChanged"></InputFile>
+    </div>
+    <div class="container">
+        <label style="margin-top:10px">Background Image</label>
+        @if(!string.IsNullOrEmpty(backgroundImage))
+        {
+            <img src="@backgroundImage" style="width:180px; height:120px;"/>
+        }
+        <InputFile style="margin-top:10px" OnChange="@OnBackgroundImageChanged"></InputFile>
+    </div>
 
-
+    <button style="margin-left:80px; margin-top: 15px; width:auto; height:35px" @onclick="SubmitQuiz"> <h4> Submit </h4></button>
 </div>
 
 @if (currentQuestion != null)
 {
-    <div class="container rounded" style="background-color:@backgroundColor; margin-left: auto; border-color:@secondaryColor; border-style:solid; border-width:3px">
+    <div class="container rounded" style="background-color:@secondaryColor; margin-left: auto; border-color:@primaryColor; border-style:solid; border-width:3px">
         <div class="container" style="text-align:center">
             <h1>
-                <textarea type="text" style="margin-top:10px; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
+                <textarea type="text" placeholder="Add question" style="margin-top:10px; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
                    @bind="@currentQuestion.Question.Body"
                    @bind:event="oninput"/>
             </h1>
-            <div class="container" style="background-color:ActiveBorder; width:480px; height:270px; margin-bottom:10px">
-                <img src="@currentQuestion?.Question.Image" alt="Quiz Image" style="object-fit:scale-down; max-height:400px; max-width:700px; height:auto; width:auto; padding:15px">
-
+            <div class="container" style="background-color:#FFFFFF; width:700px; height:400px; margin-bottom:10px">
+                @if (!string.IsNullOrEmpty(currentQuestion.Question.Image))
+                {
+                    <img src="@currentQuestion?.Question.Image" alt="Quiz Image" style="object-fit:scale-down; max-height:400px; max-width:700px; height:auto; width:auto; padding:15px">
+                }
             </div>
-
-            <div class="container" style="padding-bottom:20px">
+            <div class="container" style="margin-top:10px">
+                <InputFile style="margin:auto" OnChange="@OnQuestionImageChanged"></InputFile>
+            </div>
+            <div class="container" style="padding-bottom:20px; margin-top:10px">
                 <div class="row" style="">
                     <button class="col border container" style="pointer-events:none; height:100px">
                         <h2 style="width:100%">
-                            <input type="text" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
+                            <input type="text" placeholder="Add answer 1" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
                                @bind-value="@currentQuestion.Question.Answers[0]" />
                         </h2>
                         <div style="pointer-events:all" class="oi @(currentQuestion.Question.CorrectAnswerIndex == 0 ? "oi-check" : "oi-x")"
@@ -67,7 +99,7 @@
                     </button>
                     <button class="col border container" style="pointer-events:none; height:100px">
                         <h2>
-                            <input type="text" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
+                            <input type="text" placeholder="Add answer 2" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
                                @bind-value="@currentQuestion.Question.Answers[1]" />
                         </h2>
                         <div style="pointer-events:all"  class="oi @(currentQuestion.Question.CorrectAnswerIndex == 1 ? "oi-check" : "oi-x")"
@@ -76,7 +108,7 @@
                     <div class="w-100"></div>
                     <button class="col border container" style="pointer-events:none; height:100px">
                         <h2>
-                            <input type="text" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
+                            <input type="text" placeholder="Add answer 3" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
                                @bind-value="@currentQuestion.Question.Answers[2]" />
                         </h2>
                         <div style="pointer-events:all" class="oi @(currentQuestion.Question.CorrectAnswerIndex == 2 ? "oi-check" : "oi-x")"
@@ -84,7 +116,7 @@
                     </button>
                     <button class="col border container" style="pointer-events:none; height:100px">
                         <h2>
-                            <input type="text" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;;"
+                            <input type="text" placeholder="Add answer 4" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;;"
                                @bind-value="@currentQuestion.Question.Answers[3]" />
                         </h2>
                         <div style="pointer-events:all" class="oi @(currentQuestion.Question.CorrectAnswerIndex == 3 ? "oi-check" : "oi-x")"
@@ -98,18 +130,33 @@
     </div>
 }
 
+@if (warningDialogOpen)
+{
+    <ModalDialog Title="@warningTitle" Text="@warningMessage" DialogType="@warningType" OnClose="OnWarningDialogClose" ></ModalDialog>
+}
+
 @code {
-    private Quiz quiz;
+    private bool warningDialogOpen;
+    private string warningTitle;
+    private string warningMessage;
+    private ModalDialog.ModalDialogType warningType;
+
+    private string quizName = "";
+    private string quizDescription = "";
 
     private string primaryColor = "#610E0B";
-    private string secondaryColor = "#610E0B";
+    private string secondaryColor = "#E3BAB9";
     private string backgroundColor = "#E3BAB9";
+
+    private string backgroundImage = "";
 
     public List<EditQuestion> questions = new List<EditQuestion>();
 
     private EditQuestion currentQuestion;
 
     private EditQuestion? draggingQuestion;
+
+    private int deleteIndex = -1;
 
     protected override void OnInitialized()
     {
@@ -127,12 +174,11 @@
 
     private void HandleQuestionDelete(int index)
     {
-        questions.RemoveAt(index);
-
-        for (int i = index; i < questions.Count; i++)
-        {
-            questions[i].Index--;
-        }
+        warningTitle = "Are you sure?";
+        warningMessage = "Do you want to delete this question?";
+        warningType = ModalDialog.ModalDialogType.DeleteCancel;
+        warningDialogOpen = true;
+        deleteIndex = index;
     }
 
     private void HandleQuestionDrop(EditQuestion landingQuestion)
@@ -162,4 +208,114 @@
         Console.WriteLine(currentQuestion.Question.CorrectAnswerIndex);
     }
 
+    private async Task OnBackgroundImageChanged(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+        string fileFormat = "image/png/jpg";
+
+        var imageFile = await inputFileChangeEventArgs.File.RequestImageFileAsync(fileFormat, 1920, 1080);
+
+        var buffer = new byte[imageFile.Size];
+        await imageFile.OpenReadStream(9512000).ReadAsync(buffer);
+
+        backgroundImage = $"data:{fileFormat};base64,{Convert.ToBase64String(buffer)}";
+    }
+
+    private async Task OnQuestionImageChanged(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+        string fileFormat = "image/jpg";
+
+        var imageFile = await inputFileChangeEventArgs.File.RequestImageFileAsync(fileFormat, 1920, 1080);
+
+        var buffer = new byte[imageFile.Size];
+        try
+        {
+            await imageFile.OpenReadStream(9512000).ReadAsync(buffer);
+            currentQuestion.Question.Image = $"data:{fileFormat};base64,{Convert.ToBase64String(buffer)}";
+        }
+        catch 
+        {
+            warningDialogOpen = true;
+        }
+    }
+
+    private async Task SubmitQuiz()
+    {
+        warningType = ModalDialog.ModalDialogType.Ok;
+
+        // Checking quiz settings
+        if (string.IsNullOrEmpty(quizName))
+        {
+            warningTitle = "Quiz incomplete";
+            warningMessage = "Quiz name is missing.";
+            warningDialogOpen = true;
+            return;
+        }
+        if (string.IsNullOrEmpty(quizDescription))
+        {
+            warningTitle = "Quiz incomplete";
+            warningMessage = "Quiz description is missing.";
+            warningDialogOpen = true;
+            return;
+        }
+
+        // Checking questions
+        if (questions.Count == 0)
+        {
+            warningTitle = "Questions missing";
+            warningMessage = "The quiz has no questions.";
+            warningDialogOpen = true;
+            return;
+        }
+
+        foreach (var question in questions)
+        {
+            switch(question.VerifyQuestion())
+            {
+                case VerifyStatus.MissingBody:
+                    warningTitle = "Question incomplete";
+                    warningMessage = "Question is missing.";
+                    warningDialogOpen = true;
+                    return;
+                case VerifyStatus.MissingAnswers:
+                    warningTitle = "Question incomplete";
+                    warningMessage = "Answers are missing.";
+                    warningDialogOpen = true;
+                    return;
+                    ;
+                case VerifyStatus.MissingCorrectAnswer:
+                    warningTitle = "Question incomplete";
+                    warningMessage = "Correct answer is missing.";
+                    warningDialogOpen = true;
+                    return;
+            }
+        }
+
+        List<Question> quizQuestions = new List<Question>();
+        foreach(var question in questions)
+        {
+            quizQuestions.Add(question.Question);
+        }
+
+        Quiz quiz = new Quiz(quizName, quizDescription, quizQuestions);
+    }
+
+    private void OnWarningDialogClose(bool accepted)
+    {
+        if (accepted)
+        {
+            if (warningType == ModalDialog.ModalDialogType.DeleteCancel)
+            {
+                questions.RemoveAt(deleteIndex);
+
+                for (int i = deleteIndex; i < questions.Count; i++)
+                {
+                    questions[i].Index--;
+                }
+                deleteIndex = -1;
+                currentQuestion = null;
+            }
+        }
+        warningDialogOpen = false;
+        StateHasChanged();
+    }
 }
