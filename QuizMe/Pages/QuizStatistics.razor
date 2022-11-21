@@ -1,0 +1,109 @@
+﻿@page "/quizStatistics"
+@using Models
+@using QuizMe.Utility
+@inject HttpClient Http
+@inject NavigationManager NavManager
+
+<PageTitle>QuizzMe Statistics</PageTitle>
+
+<h3>QuizStatistics</h3>
+
+@if (quiz == null)
+{
+    <div class="container rounded" style="width: 360px; margin-left: auto; border-style:solid; border-width:3px">
+        <div class="input-group mb-3" style=" top:8px; margin: auto; padding: 10px 5px 10px 5px; ">
+            <input asp-for="QuizCode" class="form-control rounded" placeholder="Enter a quiz code" aria-label="Enter a quiz code" @bind="@joinCode" @oninput="@((e) => { joinCode = (string)e.Value;})">
+            <div></div>
+            <button class="btn btn-outline-secondary rounded" @onclick="LoadStatistics" style="margin: 0px 0px 0px 5px" id="button-addon2">Join</button>
+        </div>
+    </div>
+
+    if (alertNoCodeFound)
+    {
+        <SurveyPrompt Title="Error" />
+    }
+}
+else
+{
+    <div class="container rounded" style="background-color:white; margin-left: auto; border-style:solid; border-width:3px">
+        <div class="container" style="text-align:center">
+            <h1>@quiz.Name</h1>
+            <div class="rounded" style="border-style:solid; border-width:1px "></div>
+            <img src="https://i.ytimg.com/vi/k1INRDgxc5o/maxresdefault.jpg" alt="Quiz Image" style="width:80%; padding:15px">
+            <p align="justify"> @quiz.Description</p>
+        </div>
+    </div>
+    @for (int i = 0; i < quiz.Questions.Count; i++)
+    {
+        <div class="container rounded" style="background-color:@quiz.BackgroundColor; margin-left: auto; border-color:@quiz.SecondaryColor; border-style:solid; border-width:3px">
+            <div class="container" style="text-align:center">
+                <div class="progress" style="margin:10px">
+                    <div class="progress-bar" role="progressbar" style="background-color:@quiz.SecondaryColor; width: @((i + 1.0) / quiz.Questions.Count * 100)%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"> <b> @(i + 1) of @quiz.Questions.Count </b></div>
+                </div>
+                <h1>@quiz.Questions[i]?.Body</h1>
+                <img src="@quiz.Questions[i]?.Image" alt="Quiz Image" style=" max-height:400px; max-width:700px; height:auto; width:auto; padding:15px">
+
+                <div class="container" style="padding-bottom:20px">
+                    <div class="row" style="">
+                        <button class="col border container" style="height:100px">
+                            <h2> @quiz.Questions[i]?.Answers[0] </h2>
+                        </button>
+                        <button class="col border container" style="height:100px">
+                            <h2> @quiz.Questions[i]?.Answers[1] </h2>
+                        </button>
+                        <div class="w-100"></div>
+                        <button class="col border container" style="height:100px">
+                            <h2> @quiz.Questions[i]?.Answers[2] </h2>
+                        </button>
+                        <button class="col border container" style="height:100px">
+                            <h2> @quiz.Questions[i]?.Answers[3] </h2>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    }
+}
+
+@code {
+
+    private string joinCode = "";
+    private bool alertNoCodeFound = false;
+    private Quiz? quiz = null;
+
+    public async void LoadStatistics()
+    {
+        //List<Question> questions = new List<Question>();
+        //questions.Add(new Question("How many children should one chinese family have?", "https://ih1.redbubble.net/image.2961457088.6670/fposter,small,wall_texture,product,750x1000.jpg", new List<string>() { "1", "3", "2", "As many as possible" }, 0));
+        //questions.Add(new Question("Question 2", "", new List<string>() { "A", "B", "C", "D" }, 1));
+        //questions.Add(new Question("Question 3", "", new List<string>() { "A", "B", "C", "D" }, 1));
+        //questions.Add(new Question("Question 4", "", new List<string>() { "A", "B", "C", "D" }, 1));
+
+        // quiz = new Quiz("Social credit score test", "test quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizztest quizz", questions);
+        try
+        {
+            var response = await Http.GetAsync(Endpoints.TestEndpoint + joinCode);
+
+            Console.WriteLine(joinCode);
+            if (response.IsSuccessStatusCode)
+            {
+                alertNoCodeFound = false;
+
+                quiz = await response.Content.ReadFromJsonAsync<Quiz>();
+                Console.WriteLine(quiz);
+            }
+            else
+            {
+                Console.WriteLine("Bad Request");
+                alertNoCodeFound = true;
+            }
+            StateHasChanged();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+}
