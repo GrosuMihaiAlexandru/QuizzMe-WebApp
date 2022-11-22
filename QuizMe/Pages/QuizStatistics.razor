@@ -35,10 +35,10 @@ else
     </div>
     @for (int i = 0; i < quiz.Questions.Count; i++)
     {
-        <div class="container rounded" style="background-color:@quiz.BackgroundColor; margin-left: auto; border-color:@quiz.SecondaryColor; border-style:solid; border-width:3px">
+        <div class="container rounded" style="background-color:@quiz.SecondaryColor; margin-left: auto; border-color:@quiz.PrimaryColor; border-style:solid; border-width:3px">
             <div class="container" style="text-align:center">
                 <div class="progress" style="margin:10px">
-                    <div class="progress-bar" role="progressbar" style="background-color:@quiz.SecondaryColor; width: @((i + 1.0) / quiz.Questions.Count * 100)%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"> <b> @(i + 1) of @quiz.Questions.Count </b></div>
+                    <div class="progress-bar" role="progressbar" style="background-color:@quiz.PrimaryColor; width: @((i + 1.0) / quiz.Questions.Count * 100)%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"> <b> @(i + 1) of @quiz.Questions.Count </b></div>
                 </div>
                 <h1>@quiz.Questions[i]?.Body</h1>
                 <img src="@quiz.Questions[i]?.Image" alt="Quiz Image" style=" max-height:400px; max-width:700px; height:auto; width:auto; padding:15px">
