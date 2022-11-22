@@ -14,7 +14,7 @@
         background-repeat:no-repeat;
         background-attachment:fixed;
         background-size:cover;
-        background-image: url('https://cdn.cfr.org/sites/default/files/styles/immersive_image_3_2_desktop_2x/public/image/2018/03/CCP.jpg.webp');
+        background-image: @quiz.BackgroundImage;
     }
 </style>
 }
@@ -40,7 +40,7 @@ else if (!startedQuiz)
         <div class="container" style="text-align:center"> 
             <h1>@quiz.Name</h1>
             <div class="rounded" style="border-style:solid; border-width:1px "></div>
-            <img src="https://i.ytimg.com/vi/k1INRDgxc5o/maxresdefault.jpg" alt="Quiz Image" style="width:80%; padding:15px">
+            <img src="@quiz.MainImage" alt="Quiz Image" style="width:80%; padding:15px">
             <p align="justify"> @quiz.Description</p>
             <button class="btn btn-secondary btn-lg" @onclick="StartQuiz" style="margin: 0px 0px 10px 5px;" id="button-addon2">Start Quiz</button>
 
@@ -51,11 +51,11 @@ else
 {
     if (answerIndex >= 0)
     {
-        <div class="container rounded" style="background-color:@backgroundColor; margin-left: auto; border-color:secondaryColor; border-style:solid; border-width:3px">
+        <div class="container rounded" style="background-color:@quiz.SecondaryColor; margin-left: auto; border-color:@quiz.PrimaryColor; border-style:solid; border-width:3px">
             <div class="container" style="text-align:center">
 
                 <div class="progress" style="margin:10px">
-                    <div class="progress-bar" role="progressbar" style="background-color:@secondaryColor; width: @CompletePercentage%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"> <b> @(currentQuestionIndex + 1) of @quiz.Questions.Count </b></div>
+                    <div class="progress-bar" role="progressbar" style="background-color:@quiz.PrimaryColor; width: @CompletePercentage%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"> <b> @(currentQuestionIndex + 1) of @quiz.Questions.Count </b></div>
                 </div>
                 <h1> @currentQuestion?.Body</h1>
                 <img src="@currentQuestion?.Image" alt="Quiz Image" style=" max-height:400px; max-width:700px; height:auto; width:auto; padding:15px">
@@ -131,10 +131,10 @@ else
     }
     else
     {
-        <div class="container rounded" style="background-color:@backgroundColor; margin-left: auto; border-color:@secondaryColor; border-style:solid; border-width:3px">
+        <div class="container rounded" style="background-color:@quiz.SecondaryColor; margin-left: auto; border-color:@quiz.PrimaryColor; border-style:solid; border-width:3px">
             <div class="container" style="text-align:center">
                 <div class="progress" style="margin:10px">
-                    <div class="progress-bar" role="progressbar" style="background-color:@secondaryColor; width: @CompletePercentage%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"> <b> @(currentQuestionIndex + 1) of @quiz.Questions.Count </b></div>
+                    <div class="progress-bar" role="progressbar" style="background-color:@quiz.PrimaryColor; width: @CompletePercentage%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"> <b> @(currentQuestionIndex + 1) of @quiz.Questions.Count </b></div>
                 </div>
                 <h1>@currentQuestion?.Body</h1>
                 <img src="@currentQuestion?.Image" alt="Quiz Image" style=" max-height:400px; max-width:700px; height:auto; width:auto; padding:15px">
@@ -166,11 +166,6 @@ else
 
 @code
 {
-    // Theme
-    private string primaryColor = "#610E0B";
-    private string secondaryColor = "#610E0B";
-    private string backgroundColor = "#E3BAB9";
-
     private string joinCode = "";
     private bool alertNoCodeFound = false;
 

@@ -1,135 +1,156 @@
 ﻿@page "/createQuiz"
 @using Models
 @using QuizMe.Utility
+@inject HttpClient Http
+@inject ClipboardService ClipboardService
 <PageTitle>QuizMe Create</PageTitle>
 
 
 
-<div class="container" style="background-color:whitesmoke; position: fixed; left: 0; top: 86px; width:300px;  height:100%;">
-    <ul class="list-group" style="padding-top:10px; padding-bottom:10px; overflow-y: auto; max-height: 90%;"
-        ondragover="event.preventDefault();" ondragstart="event.dataTransfer.SetData('', event.target.id)">
-        @foreach (var question in questions.OrderBy(x => x.Index))
-        {
-            <li class="list-group-item" style="@(question.Index == currentQuestion.Index ? "background-color:lightcyan;" : "") left:0px;" @ondrop="()=>HandleQuestionDrop(question)" @key="question">
-                <button @ondragleave="@(()=> {question.IsDragOver = false;})"
-                    @ondragenter="@(()=>{question.IsDragOver = true;})"
-                    style="background:none; border:none; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; 
-                    @(question.IsDragOver?"border-style: solid none none none; border-color:red;":"")"
-                    @ondragstart="() => draggingQuestion = question"
-                    @ondragend="()=> draggingQuestion = null" draggable="true"
-                    @onclick="@(() => SelectQuestion(question.Index))">
-                    <button class="btn btn-xs" style="left:-20px top:-3px; width:10px" @onclick="() => HandleQuestionDelete(question.Index)">
-                        <span class="oi oi-trash" style="left:-7px;"></span>
-                    </button>
-                        @(question.Index + 1). @question.Question.Body
-                </button>
-            </li>
-        }
-        <li class="list-group-item" style="text-align:center;">
-            <button @onclick="OnAddQuestionButton"> Add question </button>
-        </li>
-    </ul>
-</div>
 
-<div class="container" style="background-color:whitesmoke; position: fixed; right: 0; top: 86px; width:290px;  height:100%;">
-    <h3 style="text-align:center; margin-top:10px;"> Quiz Settings</h3>
-    <div class="form-group">
-        <label for="exampleInputEmail1">Name</label>
-        <input type="text" class="form-control" placeholder="Enter quiz name" @bind-value="quizName">
-    </div>
-    <div class="form-group">
-        <label style="margin-top:10px">Description</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" rows="5" placeholder="Enter quiz description" @bind="quizDescription" @bind:event="oninput"></textarea>
-    </div>
-    <div class="form-group">
-        <label style="margin-top:10px">Primary Color</label>
-        <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="#333333" @bind-value="primaryColor">
-    </div>
-    <div class="form-group">
-        <label style="margin-top:10px">Secondary Color</label>
-        <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="#FFFFFF" @bind-value="secondaryColor">
-    </div>
-    <div class="container">
-        <label style="margin-top:10px">Main Image</label>
-        @if(!string.IsNullOrEmpty(backgroundImage))
-        {
-            <img src="@backgroundImage" style="width:180px; height:120px;"/>
-        }
-        <InputFile style="margin-top:10px" OnChange="@OnBackgroundImageChanged"></InputFile>
-    </div>
-    <div class="container">
-        <label style="margin-top:10px">Background Image</label>
-        @if(!string.IsNullOrEmpty(backgroundImage))
-        {
-            <img src="@backgroundImage" style="width:180px; height:120px;"/>
-        }
-        <InputFile style="margin-top:10px" OnChange="@OnBackgroundImageChanged"></InputFile>
-    </div>
-
-    <button style="margin-left:80px; margin-top: 15px; width:auto; height:35px" @onclick="SubmitQuiz"> <h4> Submit </h4></button>
-</div>
-
-@if (currentQuestion != null)
+@if (quizCreated)
 {
-    <div class="container rounded" style="background-color:@secondaryColor; margin-left: auto; border-color:@primaryColor; border-style:solid; border-width:3px">
-        <div class="container" style="text-align:center">
-            <h1>
-                <textarea type="text" placeholder="Add question" style="margin-top:10px; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
-                   @bind="@currentQuestion.Question.Body"
-                   @bind:event="oninput"/>
-            </h1>
-            <div class="container" style="background-color:#FFFFFF; width:700px; height:400px; margin-bottom:10px">
-                @if (!string.IsNullOrEmpty(currentQuestion.Question.Image))
-                {
-                    <img src="@currentQuestion?.Question.Image" alt="Quiz Image" style="object-fit:scale-down; max-height:400px; max-width:700px; height:auto; width:auto; padding:15px">
-                }
-            </div>
-            <div class="container" style="margin-top:10px">
-                <InputFile style="margin:auto" OnChange="@OnQuestionImageChanged"></InputFile>
-            </div>
-            <div class="container" style="padding-bottom:20px; margin-top:10px">
-                <div class="row" style="">
-                    <button class="col border container" style="pointer-events:none; height:100px">
-                        <h2 style="width:100%">
-                            <input type="text" placeholder="Add answer 1" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
-                               @bind-value="@currentQuestion.Question.Answers[0]" />
-                        </h2>
-                        <div style="pointer-events:all" class="oi @(currentQuestion.Question.CorrectAnswerIndex == 0 ? "oi-check" : "oi-x")"
-                            @onclick="() => SetRightAnswer(0)" />
-                    </button>
-                    <button class="col border container" style="pointer-events:none; height:100px">
-                        <h2>
-                            <input type="text" placeholder="Add answer 2" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
-                               @bind-value="@currentQuestion.Question.Answers[1]" />
-                        </h2>
-                        <div style="pointer-events:all"  class="oi @(currentQuestion.Question.CorrectAnswerIndex == 1 ? "oi-check" : "oi-x")"
-                            @onclick="() => SetRightAnswer(1)" />
-                    </button>
-                    <div class="w-100"></div>
-                    <button class="col border container" style="pointer-events:none; height:100px">
-                        <h2>
-                            <input type="text" placeholder="Add answer 3" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
-                               @bind-value="@currentQuestion.Question.Answers[2]" />
-                        </h2>
-                        <div style="pointer-events:all" class="oi @(currentQuestion.Question.CorrectAnswerIndex == 2 ? "oi-check" : "oi-x")"
-                            @onclick="() => SetRightAnswer(2)" />
-                    </button>
-                    <button class="col border container" style="pointer-events:none; height:100px">
-                        <h2>
-                            <input type="text" placeholder="Add answer 4" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;;"
-                               @bind-value="@currentQuestion.Question.Answers[3]" />
-                        </h2>
-                        <div style="pointer-events:all" class="oi @(currentQuestion.Question.CorrectAnswerIndex == 3 ? "oi-check" : "oi-x")"
-                            @onclick="() => SetRightAnswer(3)" />
-                    </button>
-                </div>
+    <div class="container" style="width: 400px; margin-left: auto;">
+        <h3> Quiz Created Successfully!</h3>
 
+        <label>Join using the following quiz code:</label>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" readonly @bind-value="@quizCode">
+            <div class="input-group-append">
+                <Tooltip Text="@copyTooltip">
+                    <button class="btn @(copied == true ? "btn-success" : "btn-primary")" type="button" style="" @onclick="OnCopyToClipboard"> Copy  </button> 
+                </Tooltip>
             </div>
-
         </div>
     </div>
 }
+else
+{
+    <div class="container" style="background-color:whitesmoke; position: fixed; left: 0; top: 86px; width:300px;  height:100%;">
+        <ul class="list-group" style="padding-top:10px; padding-bottom:10px; overflow-y: auto; max-height: 90%;"
+            ondragover="event.preventDefault();" ondragstart="event.dataTransfer.SetData('', event.target.id)">
+            @foreach (var question in questions.OrderBy(x => x.Index))
+            {
+                <li class="list-group-item" style="@(question.Index == currentQuestion.Index ? "background-color:lightcyan;" : "") left:0px;" @ondrop="()=>HandleQuestionDrop(question)" @key="question">
+                    <button @ondragleave="@(()=> {question.IsDragOver = false;})"
+                        @ondragenter="@(()=>{question.IsDragOver = true;})"
+                        style="background:none; border:none; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; 
+                        @(question.IsDragOver?"border-style: solid none none none; border-color:red;":"")"
+                        @ondragstart="() => draggingQuestion = question"
+                        @ondragend="()=> draggingQuestion = null" draggable="true"
+                        @onclick="@(() => SelectQuestion(question.Index))">
+                        <button class="btn btn-xs" style="left:-20px top:-3px; width:10px" @onclick="() => HandleQuestionDelete(question.Index)">
+                            <span class="oi oi-trash" style="left:-7px;"></span>
+                        </button>
+                            @(question.Index + 1). @question.Question.Body
+                    </button>
+                </li>
+            }
+            <li class="list-group-item" style="text-align:center;">
+                <button @onclick="OnAddQuestionButton"> Add question </button>
+            </li>
+        </ul>
+    </div>
 
+    <div class="container" style="background-color:whitesmoke; position: fixed; right: 0; top: 86px; width:290px;  height:100%;">
+        <h3 style="text-align:center; margin-top:10px;"> Quiz Settings</h3>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Name</label>
+            <input type="text" class="form-control" placeholder="Enter quiz name" @bind-value="quizName">
+        </div>
+        <div class="form-group">
+            <label style="margin-top:10px">Description</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="5" placeholder="Enter quiz description" @bind="quizDescription" @bind:event="oninput"></textarea>
+        </div>
+        <div class="form-group">
+            <label style="margin-top:10px">Primary Color</label>
+            <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="#333333" @bind-value="primaryColor">
+        </div>
+        <div class="form-group">
+            <label style="margin-top:10px">Secondary Color</label>
+            <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="#FFFFFF" @bind-value="secondaryColor">
+        </div>
+        <div class="container">
+            <label style="margin-top:10px">Main Image</label>
+            @if(!string.IsNullOrEmpty(mainImage))
+            {
+                <img src="@mainImage" style="width:180px; height:120px;"/>
+            }
+            <InputFile style="margin-top:10px" OnChange="@OnMainImageChanged"></InputFile>
+        </div>
+        <div class="container">
+            <label style="margin-top:10px">Background Image</label>
+            @if(!string.IsNullOrEmpty(backgroundImage))
+            {
+                <img src="@backgroundImage" style="width:180px; height:120px;"/>
+            }
+            <InputFile style="margin-top:10px" OnChange="@OnBackgroundImageChanged"></InputFile>
+        </div>
+
+        <button style="margin-left:80px; margin-top: 15px; width:auto; height:35px" @onclick="SubmitQuiz"> <h4> Submit </h4></button>
+    </div>
+
+    @if (currentQuestion != null)
+    {
+        <div class="container rounded" style="background-color:@secondaryColor; margin-left: auto; border-color:@primaryColor; border-style:solid; border-width:3px">
+            <div class="container" style="text-align:center">
+                <h1>
+                    <textarea type="text" placeholder="Add question" style="margin-top:10px; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
+                       @bind="@currentQuestion.Question.Body"
+                       @bind:event="oninput"/>
+                </h1>
+                <div class="container" style="margin-bottom:10px">
+                    @if (!string.IsNullOrEmpty(currentQuestion.Question.Image))
+                    {
+                        <img src="@currentQuestion?.Question.Image" alt="Quiz Image" style="object-fit:scale-down; max-height:400px; max-width:700px; height:auto; width:auto; padding:15px">
+                    }
+                </div>
+                <div class="container" style="margin-top:10px">
+                    <InputFile style="margin:auto" OnChange="@OnQuestionImageChanged"></InputFile>
+                </div>
+                <div class="container" style="padding-bottom:20px; margin-top:10px">
+                    <div class="row" style="">
+                        <button class="col border container" style="pointer-events:none; height:100px">
+                            <h2 style="width:100%">
+                                <input type="text" placeholder="Add answer 1" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
+                                   @bind-value="@currentQuestion.Question.Answers[0]" />
+                            </h2>
+                            <div style="pointer-events:all" class="oi @(currentQuestion.Question.CorrectAnswerIndex == 0 ? "oi-check" : "oi-x")"
+                                @onclick="() => SetRightAnswer(0)" />
+                        </button>
+                        <button class="col border container" style="pointer-events:none; height:100px">
+                            <h2>
+                                <input type="text" placeholder="Add answer 2" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
+                                   @bind-value="@currentQuestion.Question.Answers[1]" />
+                            </h2>
+                            <div style="pointer-events:all"  class="oi @(currentQuestion.Question.CorrectAnswerIndex == 1 ? "oi-check" : "oi-x")"
+                                @onclick="() => SetRightAnswer(1)" />
+                        </button>
+                        <div class="w-100"></div>
+                        <button class="col border container" style="pointer-events:none; height:100px">
+                            <h2>
+                                <input type="text" placeholder="Add answer 3" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;"
+                                   @bind-value="@currentQuestion.Question.Answers[2]" />
+                            </h2>
+                            <div style="pointer-events:all" class="oi @(currentQuestion.Question.CorrectAnswerIndex == 2 ? "oi-check" : "oi-x")"
+                                @onclick="() => SetRightAnswer(2)" />
+                        </button>
+                        <button class="col border container" style="pointer-events:none; height:100px">
+                            <h2>
+                                <input type="text" placeholder="Add answer 4" style="pointer-events:all; text-align:center; background:inherit; border:none; display: inline; font-family:inherit; font-size: inherit; padding: none; width:100%;;"
+                                   @bind-value="@currentQuestion.Question.Answers[3]" />
+                            </h2>
+                            <div style="pointer-events:all" class="oi @(currentQuestion.Question.CorrectAnswerIndex == 3 ? "oi-check" : "oi-x")"
+                                @onclick="() => SetRightAnswer(3)" />
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    }
+}
 @if (warningDialogOpen)
 {
     <ModalDialog Title="@warningTitle" Text="@warningMessage" DialogType="@warningType" OnClose="OnWarningDialogClose" ></ModalDialog>
@@ -148,6 +169,7 @@
     private string secondaryColor = "#E3BAB9";
     private string backgroundColor = "#E3BAB9";
 
+    private string mainImage = "";
     private string backgroundImage = "";
 
     public List<EditQuestion> questions = new List<EditQuestion>();
@@ -157,6 +179,12 @@
     private EditQuestion? draggingQuestion;
 
     private int deleteIndex = -1;
+
+    private bool quizCreated = false;
+    private string quizCode = "";
+
+    private string copyTooltip = "Copy to clipboard";
+    private bool copied = false;
 
     protected override void OnInitialized()
     {
@@ -218,6 +246,18 @@
         await imageFile.OpenReadStream(9512000).ReadAsync(buffer);
 
         backgroundImage = $"data:{fileFormat};base64,{Convert.ToBase64String(buffer)}";
+    }
+
+    private async Task OnMainImageChanged(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+        string fileFormat = "image/png/jpg";
+
+        var imageFile = await inputFileChangeEventArgs.File.RequestImageFileAsync(fileFormat, 1920, 1080);
+
+        var buffer = new byte[imageFile.Size];
+        await imageFile.OpenReadStream(9512000).ReadAsync(buffer);
+
+        mainImage = $"data:{fileFormat};base64,{Convert.ToBase64String(buffer)}";
     }
 
     private async Task OnQuestionImageChanged(InputFileChangeEventArgs inputFileChangeEventArgs)
@@ -298,6 +338,27 @@
 
         Quiz quiz = new Quiz(quizName, quizDescription, primaryColor, secondaryColor, quizQuestions);
 
+        try
+        {
+            var response = await Http.PostAsJsonAsync<Quiz>(Endpoints.CreateQuizEndpoint, quiz);
+
+            if (response.IsSuccessStatusCode)
+            {
+
+                quizCode = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(quizCode);
+                quizCreated = true;
+            }
+            else
+            {
+                Console.WriteLine("Bad Request");
+            }
+            Console.WriteLine(response);
+        }
+        catch
+        {
+
+        }
     }
 
     private void OnWarningDialogClose(bool accepted)
@@ -318,5 +379,12 @@
         }
         warningDialogOpen = false;
         StateHasChanged();
+    }
+
+    private async Task OnCopyToClipboard()
+    {
+        await ClipboardService.WriteTextAsync(quizCode);
+        copyTooltip = "Copied";
+        copied = true;
     }
 }
