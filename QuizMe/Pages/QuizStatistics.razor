@@ -6,8 +6,6 @@
 
 <PageTitle>QuizzMe Statistics</PageTitle>
 
-<h3>QuizStatistics</h3>
-
 @if (quiz != null)
 {
     <style>
@@ -57,22 +55,38 @@ else
 
                 <div class="container" style="padding-bottom:20px">
                     <div class="row" style="">
-                        <button class="col border container" style="height:100px">
+                        <button class="col border container" style="pointer-events:none; height:100px">
                             <h2> @quiz.Questions[i]?.Answers[0] </h2>
-                            <h2> @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[0] / quiz.NoOfSubmittedAnswers : 0)% </h2>
+                            <div class="progress" style="height:45px; background-color:inherit">
+                                <div class="progress-bar" role="progressbar" style="background-color:@quiz.PrimaryColor; width: @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[0] / quiz.NoOfSubmittedAnswers : 0)%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                                    <h2> @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[0] / quiz.NoOfSubmittedAnswers : 0)% </h2>
+                                </div>
+                            </div>
                         </button>
-                        <button class="col border container" style="height:100px">
+                        <button class="col border container" style="pointer-events:none; height:100px">
                             <h2> @quiz.Questions[i]?.Answers[1] </h2>
-                            <h2> @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[1] / quiz.NoOfSubmittedAnswers : 0)% </h2>
+                            <div class="progress" style="height:45px; background-color:inherit">
+                                <div class="progress-bar" role="progressbar" style="background-color:@quiz.PrimaryColor; width: @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[1] / quiz.NoOfSubmittedAnswers : 0)%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                                    <h2> @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[1] / quiz.NoOfSubmittedAnswers : 0)% </h2>
+                                </div>
+                            </div>
                         </button>
                         <div class="w-100"></div>
-                        <button class="col border container" style="height:100px">
+                        <button class="col border container" style="pointer-events:none; height:100px">
                             <h2> @quiz.Questions[i]?.Answers[2] </h2>
-                            <h2> @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[2] / quiz.NoOfSubmittedAnswers : 0)% </h2>
+                            <div class="progress" style="height:45px; background-color:inherit">
+                                <div class="progress-bar" role="progressbar" style="background-color:@quiz.PrimaryColor; width: @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[2] / quiz.NoOfSubmittedAnswers : 0)%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                                    <h2> @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[2] / quiz.NoOfSubmittedAnswers : 0)% </h2>
+                                </div>
+                            </div>
                         </button>
-                        <button class="col border container" style="height:100px">
+                        <button class="col border container" style="pointer-events:none; height:100px">
                             <h2> @quiz.Questions[i]?.Answers[3] </h2>
-                            <h2> @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[3] / quiz.NoOfSubmittedAnswers : 0)% </h2>
+                            <div class="progress" style="height:45px; background-color:inherit;">
+                                <div class="progress-bar" role="progressbar" style="background-color:@quiz.PrimaryColor; width: @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[3] / quiz.NoOfSubmittedAnswers : 0)%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                                    <h2> @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[3] / quiz.NoOfSubmittedAnswers : 0)% </h2>
+                                </div>
+                            </div>
                         </button>
                     </div>
 
