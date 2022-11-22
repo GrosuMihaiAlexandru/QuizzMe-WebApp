@@ -14,7 +14,7 @@
         background-repeat:no-repeat;
         background-attachment:fixed;
         background-size:cover;
-        background-image: @quiz.BackgroundImage;
+        background-image: url(@quiz.BackgroundImage);
     }
 </style>
 }
@@ -40,7 +40,7 @@ else if (!startedQuiz)
         <div class="container" style="text-align:center"> 
             <h1>@quiz.Name</h1>
             <div class="rounded" style="border-style:solid; border-width:1px "></div>
-            <img src="@quiz.MainImage" alt="Quiz Image" style="width:80%; padding:15px">
+            <img src=@quiz.MainImage alt="Quiz Image" style="width:80%; padding:15px">
             <p align="justify"> @quiz.Description</p>
             <button class="btn btn-secondary btn-lg" @onclick="StartQuiz" style="margin: 0px 0px 10px 5px;" id="button-addon2">Start Quiz</button>
 

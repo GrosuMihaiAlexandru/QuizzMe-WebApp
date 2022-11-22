@@ -8,6 +8,18 @@
 
 <h3>QuizStatistics</h3>
 
+@if (quiz != null)
+{
+    <style>
+        body {
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            background-image: url(@quiz.BackgroundImage);
+        }
+    </style>
+}
+
 @if (quiz == null)
 {
     <div class="container rounded" style="width: 360px; margin-left: auto; border-style:solid; border-width:3px">
@@ -29,7 +41,7 @@ else
         <div class="container" style="text-align:center">
             <h1>@quiz.Name</h1>
             <div class="rounded" style="border-style:solid; border-width:1px "></div>
-            <img src="https://i.ytimg.com/vi/k1INRDgxc5o/maxresdefault.jpg" alt="Quiz Image" style="width:80%; padding:15px">
+            <img src=@quiz.MainImage alt="Quiz Image" style="width:80%; padding:15px">
             <p align="justify"> @quiz.Description</p>
         </div>
     </div>
@@ -47,20 +59,20 @@ else
                     <div class="row" style="">
                         <button class="col border container" style="height:100px">
                             <h2> @quiz.Questions[i]?.Answers[0] </h2>
-                            <h2> @(100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[0] / quiz.NoOfSubmittedAnswers)% </h2>
+                            <h2> @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[0] / quiz.NoOfSubmittedAnswers : 0)% </h2>
                         </button>
                         <button class="col border container" style="height:100px">
                             <h2> @quiz.Questions[i]?.Answers[1] </h2>
-                            <h2> @(100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[1] / quiz.NoOfSubmittedAnswers)% </h2>
+                            <h2> @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[1] / quiz.NoOfSubmittedAnswers : 0)% </h2>
                         </button>
                         <div class="w-100"></div>
                         <button class="col border container" style="height:100px">
                             <h2> @quiz.Questions[i]?.Answers[2] </h2>
-                            <h2> @(100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[2] / quiz.NoOfSubmittedAnswers)% </h2>
+                            <h2> @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[2] / quiz.NoOfSubmittedAnswers : 0)% </h2>
                         </button>
                         <button class="col border container" style="height:100px">
                             <h2> @quiz.Questions[i]?.Answers[3] </h2>
-                            <h2> @(100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[3] / quiz.NoOfSubmittedAnswers)% </h2>
+                            <h2> @(quiz.NoOfSubmittedAnswers != 0 ? 100.0 * quiz.Questions[i]?.NoOfTimesAnswerWasChosen[3] / quiz.NoOfSubmittedAnswers : 0)% </h2>
                         </button>
                     </div>
 
