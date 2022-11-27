@@ -3,6 +3,6 @@
     public class QuizAnswer
     {
         public string QuizJoinCode { get; set; }
-        public List<int> AnswersIndexes { get; set; }
+        public List<int> AnswersIndexes { get; set; } = new List<int>();
     }
 }

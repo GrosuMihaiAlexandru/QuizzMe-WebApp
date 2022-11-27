@@ -1,6 +1,7 @@
 ﻿@page "/createQuiz"
 @using Models
 @using QuizMe.Utility
+@using System.Text.Json
 @inject HttpClient Http
 @inject ClipboardService ClipboardService
 <PageTitle>QuizMe Create</PageTitle>
@@ -336,12 +337,12 @@ else
             quizQuestions.Add(question.Question);
         }
 
-        Quiz quiz = new Quiz(quizName, quizDescription, primaryColor, secondaryColor, quizQuestions);
+        Quiz quiz = new Quiz(quizName, quizDescription, primaryColor, secondaryColor, mainImage, backgroundImage, quizQuestions);
 
         try
         {
             var response = await Http.PostAsJsonAsync<Quiz>(Endpoints.CreateQuizEndpoint, quiz);
-
+          
             if (response.IsSuccessStatusCode)
             {
 
@@ -367,14 +368,24 @@ else
         {
             if (warningType == ModalDialog.ModalDialogType.DeleteCancel)
             {
+                Console.WriteLine(deleteIndex);
                 questions.RemoveAt(deleteIndex);
 
                 for (int i = deleteIndex; i < questions.Count; i++)
                 {
                     questions[i].Index--;
                 }
+
+                if (deleteIndex > 0 && questions.Count > 0)
+                {
+                    currentQuestion = questions[deleteIndex - 1];
+                }
+                else
+                {
+                    currentQuestion = null;
+                }
+
                 deleteIndex = -1;
-                currentQuestion = null;
             }
         }
         warningDialogOpen = false;

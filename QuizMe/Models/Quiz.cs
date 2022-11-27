@@ -12,13 +12,15 @@
         public string Description { get; set; }
         public List<Question> Questions { get; set; }
 
-        public Quiz(string name, string description, string primaryColor, string secondaryColor, List<Question> questions)
+        public Quiz(string name, string description, string primaryColor, string secondaryColor, string mainImage, string backgroundImage, List<Question> questions)
         {
             Name = name;
             Description = description;
             Questions = questions;
             PrimaryColor = primaryColor;
             SecondaryColor = secondaryColor;
+            MainImage = mainImage;
+            BackgroundImage = backgroundImage;
         }
 
         public override string ToString()

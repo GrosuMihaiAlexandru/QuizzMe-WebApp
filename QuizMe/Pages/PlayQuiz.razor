@@ -3,11 +3,12 @@
 @using QuizMe.Utility
 @inject HttpClient Http
 @inject NavigationManager NavManager
+@inject ClipboardService ClipboardService
 @inject ISoundPlayer SoundPlayer
 
 <PageTitle>QuizMe Play</PageTitle>
 
-@if (quiz != null)
+@if (quiz != null && !quizSubmitted)
 {
 <style>
     body {
@@ -19,151 +20,179 @@
 </style>
 }
 
-@if (quiz == null)
+@if (quizSubmitted)
 {
-    <div class="container rounded" style="width: 360px; margin-left: auto; border-style:solid; border-width:3px">
-        <div class="input-group mb-3" style=" top:8px; margin: auto; padding: 10px 5px 10px 5px; ">
-            <input asp-for="QuizCode" class="form-control rounded" placeholder="Enter a quiz code" aria-label="Enter a quiz code" @bind="@joinCode" @oninput="@((e) => { joinCode = (string)e.Value;})">
-            <div></div>
-            <button class="btn btn-outline-secondary rounded" @onclick="JoinButton" style="margin: 0px 0px 0px 5px" id="button-addon2">Join</button>
-        </div>
-    </div>
+    <div class="container" style="width: 400px; margin-left: auto;">
+        <h3> Quiz Submitted  Successfully!</h3>
+        
+        <label> Head over to Statistics to see how well others did!</label>
+        <br/>
 
-    if (alertNoCodeFound)
-    {
-        <SurveyPrompt Title="Error"/>
-    }
-}
-else if (!startedQuiz)
-{
-    <div class="container rounded" style="background-color:white; margin-left: auto; border-style:solid; border-width:3px">
-        <div class="container" style="text-align:center"> 
-            <h1>@quiz.Name</h1>
-            <div class="rounded" style="border-style:solid; border-width:1px "></div>
-            <img src=@quiz.MainImage alt="Quiz Image" style="width:80%; padding:15px">
-            <p align="justify"> @quiz.Description</p>
-            <button class="btn btn-secondary btn-lg" @onclick="StartQuiz" style="margin: 0px 0px 10px 5px;" id="button-addon2">Start Quiz</button>
-
+        <label>Join code:</label>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" readonly @bind-value="@quiz.JoinCode">
+            <div class="input-group-append">
+                <Tooltip Text="@copyTooltip">
+                    <button class="btn @(copied == true ? "btn-success" : "btn-primary")" type="button" style="" @onclick="OnCopyToClipboard"> Copy  </button> 
+                </Tooltip>
+            </div>
         </div>
     </div>
 }
 else
 {
-    if (answerIndex >= 0)
+    @if (quiz == null)
     {
-        <div class="container rounded" style="background-color:@quiz.SecondaryColor; margin-left: auto; border-color:@quiz.PrimaryColor; border-style:solid; border-width:3px">
-            <div class="container" style="text-align:center">
+        <div class="container rounded" style="width: 360px; margin-left: auto; border-style:solid; border-width:3px">
+            <div class="input-group mb-3" style=" top:8px; margin: auto; padding: 10px 5px 10px 5px; ">
+                <input asp-for="QuizCode" class="form-control rounded" placeholder="Enter a quiz code" aria-label="Enter a quiz code" @bind="@joinCode" @oninput="@((e) => { joinCode = (string)e.Value;})">
+                <div></div>
+                <button class="btn btn-outline-secondary rounded" @onclick="JoinButton" style="margin: 0px 0px 0px 5px" id="button-addon2">Join</button>
+            </div>
+        </div>
 
-                <div class="progress" style="margin:10px">
-                    <div class="progress-bar" role="progressbar" style="background-color:@quiz.PrimaryColor; width: @CompletePercentage%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"> <b> @(currentQuestionIndex + 1) of @quiz.Questions.Count </b></div>
-                </div>
-                <h1> @currentQuestion?.Body</h1>
-                <img src="@currentQuestion?.Image" alt="Quiz Image" style=" max-height:400px; max-width:700px; height:auto; width:auto; padding:15px">
-            
-                <div class="container" style="padding-bottom:20px">
-                    <div class="row" style="">
-                        <button class="col border" style="height:100px; @("background-color:" + (0 == currentQuestion?.CorrectAnswerIndex ? "green": (answerIndex == 0 ? "red" : "") ))">
-                            <h2> @currentQuestion?.Answers[0] </h2>
-                            @if (currentQuestion?.CorrectAnswerIndex == 0)
-                            {
-                                <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
-                            }
-                            else
-                            {
-                                if (answerIndex == 0)
-                                {
-                                    <span class="oi oi-x" style="color:white; margin:auto margin-right:0"></span>
-                                }
-                            }
+        if (alertNoCodeFound)
+        {
+            <SurveyPrompt Title="Error"/>
+        }
+    }
+    else if (!startedQuiz)
+    {
+        <div class="container rounded" style="background-color:white; margin-left: auto; border-style:solid; border-width:3px">
+            <div class="container" style="text-align:center"> 
+                <h1>@quiz.Name</h1>
+                <div class="rounded" style="border-style:solid; border-width:1px "></div>
+                <img src=@quiz.MainImage alt="Quiz Image" style="width:80%; padding:15px">
+                <p align="justify"> @quiz.Description</p>
+                <button class="btn btn-secondary btn-lg" @onclick="StartQuiz" style="margin: 0px 0px 10px 5px;" id="button-addon2">Start Quiz</button>
 
-                        </button>
-                        <button class="col border" style="height:100px; @("background-color:" + (1 == currentQuestion?.CorrectAnswerIndex ? "green": (answerIndex == 1 ? "red" : "") ))">
-                            <h2> @currentQuestion?.Answers[1] </h2>
-                            @if (currentQuestion?.CorrectAnswerIndex == 1)
-                            {
-                                <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
-                            }
-                            else
-                            {
-                                if (answerIndex == 1)
-                                {
-                                    <span class="oi oi-x" style="color:white; margin:auto margin-right:0"></span>
-                                }
-                            }
-                        </button>                    
-                        <div class="w-100"></div>
-                        <button class="col border" style="height:100px; @("background-color:" + (2 == currentQuestion?.CorrectAnswerIndex ? "green": (answerIndex == 2 ? "red" : "") ))">
-                            <h2> @currentQuestion?.Answers[2] </h2>
-                            @if (currentQuestion?.CorrectAnswerIndex == 2)
-                            {
-                                <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
-                            }
-                            else
-                            {
-                                if (answerIndex == 2)
-                                {
-                                    <span class="oi oi-x" style="color:white; margin:auto margin-right:0"></span>
-                                }
-                            }
-                        </button>
-                        <button class="col border" style="height:100px; @("background-color:" + (3 == currentQuestion?.CorrectAnswerIndex ? "green": (answerIndex == 3 ? "red" : "") ))">
-                            <h2> @currentQuestion?.Answers[3] </h2>
-                            @if (currentQuestion?.CorrectAnswerIndex == 3)
-                            {
-                                <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
-                            }
-                            else
-                            {
-                                if (answerIndex == 3)
-                                {
-                                    <span class="oi oi-x" style="color:white; margin:auto margin-right:0"></span>
-                                }
-                            }
-                        </button>
-                    </div>
-
-                </div>
-                <div class="container">
-                    <button class="btn btn-secondary btn-lg" style="width = 80%; padding:20px; margin-bottom:10px; margin-right:0px;" @onclick="NextQuestionClicked"> Next Question</button>
-                </div>
             </div>
         </div>
     }
     else
     {
-        <div class="container rounded" style="background-color:@quiz.SecondaryColor; margin-left: auto; border-color:@quiz.PrimaryColor; border-style:solid; border-width:3px">
-            <div class="container" style="text-align:center">
-                <div class="progress" style="margin:10px">
-                    <div class="progress-bar" role="progressbar" style="background-color:@quiz.PrimaryColor; width: @CompletePercentage%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"> <b> @(currentQuestionIndex + 1) of @quiz.Questions.Count </b></div>
-                </div>
-                <h1>@currentQuestion?.Body</h1>
-                <img src="@currentQuestion?.Image" alt="Quiz Image" style=" max-height:400px; max-width:700px; height:auto; width:auto; padding:15px">
-            
-                <div class="container" style="padding-bottom:20px">
-                    <div class="row" style="">
-                        <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(0))">
-                            <h2> @currentQuestion?.Answers[0] </h2>
-                        </button>
-                        <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(1))">
-                            <h2> @currentQuestion?.Answers[1] </h2>
-                        </button>                    
-                        <div class="w-100"></div>
-                        <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(2))">
-                            <h2> @currentQuestion?.Answers[2] </h2>
-                        </button>
-                        <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(3))">
-                            <h2> @currentQuestion?.Answers[3] </h2>
-                        </button>
+        if (answerIndex >= 0)
+        {
+            <div class="container rounded" style="background-color:@quiz.SecondaryColor; margin-left: auto; border-color:@quiz.PrimaryColor; border-style:solid; border-width:3px">
+                <div class="container" style="text-align:center">
+
+                    <div class="progress" style="margin:10px">
+                        <div class="progress-bar" role="progressbar" style="background-color:@quiz.PrimaryColor; width: @CompletePercentage%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"> <b> @(currentQuestionIndex + 1) of @quiz.Questions.Count </b></div>
                     </div>
+                    <h1> @currentQuestion?.Body</h1>
+                    <img src="@currentQuestion?.Image" alt="Quiz Image" style=" max-height:400px; max-width:700px; height:auto; width:auto; padding:15px">
+            
+                    <div class="container" style="padding-bottom:20px">
+                        <div class="row" style="">
+                            <button class="col border" style="height:100px; @("background-color:" + (0 == currentQuestion?.CorrectAnswerIndex ? "green": (answerIndex == 0 ? "red" : "") ))">
+                                <h2> @currentQuestion?.Answers[0] </h2>
+                                @if (currentQuestion?.CorrectAnswerIndex == 0)
+                                {
+                                    <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
+                                }
+                                else
+                                {
+                                    if (answerIndex == 0)
+                                    {
+                                        <span class="oi oi-x" style="color:white; margin:auto margin-right:0"></span>
+                                    }
+                                }
 
+                            </button>
+                            <button class="col border" style="height:100px; @("background-color:" + (1 == currentQuestion?.CorrectAnswerIndex ? "green": (answerIndex == 1 ? "red" : "") ))">
+                                <h2> @currentQuestion?.Answers[1] </h2>
+                                @if (currentQuestion?.CorrectAnswerIndex == 1)
+                                {
+                                    <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
+                                }
+                                else
+                                {
+                                    if (answerIndex == 1)
+                                    {
+                                        <span class="oi oi-x" style="color:white; margin:auto margin-right:0"></span>
+                                    }
+                                }
+                            </button>                    
+                            <div class="w-100"></div>
+                            <button class="col border" style="height:100px; @("background-color:" + (2 == currentQuestion?.CorrectAnswerIndex ? "green": (answerIndex == 2 ? "red" : "") ))">
+                                <h2> @currentQuestion?.Answers[2] </h2>
+                                @if (currentQuestion?.CorrectAnswerIndex == 2)
+                                {
+                                    <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
+                                }
+                                else
+                                {
+                                    if (answerIndex == 2)
+                                    {
+                                        <span class="oi oi-x" style="color:white; margin:auto margin-right:0"></span>
+                                    }
+                                }
+                            </button>
+                            <button class="col border" style="height:100px; @("background-color:" + (3 == currentQuestion?.CorrectAnswerIndex ? "green": (answerIndex == 3 ? "red" : "") ))">
+                                <h2> @currentQuestion?.Answers[3] </h2>
+                                @if (currentQuestion?.CorrectAnswerIndex == 3)
+                                {
+                                    <span class="oi oi-check" style="color:white; margin:auto margin-right:0"></span>
+                                }
+                                else
+                                {
+                                    if (answerIndex == 3)
+                                    {
+                                        <span class="oi oi-x" style="color:white; margin:auto margin-right:0"></span>
+                                    }
+                                }
+                            </button>
+                        </div>
+
+                    </div>
+                    <div class="container">
+                        @if (lastQuestion)
+                        {
+                            <button class="btn btn-secondary btn-lg" style="width = 80%; padding:20px; margin-bottom:10px; margin-right:0px;" @onclick="SubmitQuizRezults"> Submit Quiz</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary btn-lg" style="width = 80%; padding:20px; margin-bottom:10px; margin-right:0px;" @onclick="NextQuestionClicked"> Next Question</button>
+                        }
+                    </div>
                 </div>
-        
             </div>
-        </div>
+        }
+        else
+        {
+            <div class="container rounded" style="background-color:@quiz.SecondaryColor; margin-left: auto; border-color:@quiz.PrimaryColor; border-style:solid; border-width:3px">
+                <div class="container" style="text-align:center">
+                    <div class="progress" style="margin:10px">
+                        <div class="progress-bar" role="progressbar" style="background-color:@quiz.PrimaryColor; width: @CompletePercentage%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"> <b> @(currentQuestionIndex + 1) of @quiz.Questions.Count </b></div>
+                    </div>
+                    <h1>@currentQuestion?.Body</h1>
+                    <img src="@currentQuestion?.Image" alt="Quiz Image" style=" max-height:400px; max-width:700px; height:auto; width:auto; padding:15px">
+            
+                    <div class="container" style="padding-bottom:20px">
+                        <div class="row" style="">
+                            <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(0))">
+                                <h2> @currentQuestion?.Answers[0] </h2>
+                            </button>
+                            <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(1))">
+                                <h2> @currentQuestion?.Answers[1] </h2>
+                            </button>                    
+                            <div class="w-100"></div>
+                            <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(2))">
+                                <h2> @currentQuestion?.Answers[2] </h2>
+                            </button>
+                            <button class="col border container" style="height:100px" @onclick="@(() => AnswerClicked(3))">
+                                <h2> @currentQuestion?.Answers[3] </h2>
+                            </button>
+                        </div>
+
+                    </div>
+        
+                </div>
+            </div>
+        }
+
     }
-
 }
-
 @code
 {
     private string joinCode = "";
@@ -180,6 +209,13 @@ else
     private bool answerIsCorrect = false;
     private int answerIndex = -1;
 
+    private bool lastQuestion = false;
+    private bool quizSubmitted = false;
+
+    private QuizAnswer answers;
+
+    private string copyTooltip = "Copy to clipboard";
+    private bool copied = false;
 
     public async void JoinButton()
     {
@@ -226,6 +262,8 @@ else
         currentQuestionIndex = 0;
         currentQuestion = quiz.Questions[currentQuestionIndex];
         startedQuiz = true;
+        answers = new QuizAnswer();
+        answers.QuizJoinCode = quiz.JoinCode;
     }
 
     public async void AnswerClicked(int answer)
@@ -234,13 +272,15 @@ else
 
         if (answerIndex == currentQuestion?.CorrectAnswerIndex)
         {
-            // NU MERGE
+
             await SoundPlayer.Play("audio/rightAnswer.mp3");
         }
         else
         {
             await SoundPlayer.Play("audio/wrongAnswer.mp3");
         }
+
+        answers.AnswersIndexes.Add(answerIndex);
         StateHasChanged();
         Console.WriteLine(CompletePercentage);
     }
@@ -250,8 +290,49 @@ else
 
         answerIndex = -1;
         currentQuestionIndex++;
-        currentQuestion = quiz?.Questions[currentQuestionIndex];
+
+        // Quiz done
+        if (currentQuestionIndex == quiz?.Questions.Count - 1)
+        {
+            lastQuestion = true;
+            currentQuestion = quiz?.Questions[currentQuestionIndex];
+        }
+        else
+        {
+            currentQuestion = quiz?.Questions[currentQuestionIndex];
+        }
+    }
+
+    public async void SubmitQuizRezults()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync<QuizAnswer>(Endpoints.CreateAnswerEndpoint, answers);
+
+            if (response.IsSuccessStatusCode)
+            {
+                quizSubmitted = true;
+                Console.WriteLine(response.Content);
+            }
+            else
+            {
+                Console.WriteLine("Bad Request");
+            }
+            StateHasChanged();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 
     private int CompletePercentage { get => (int)((currentQuestionIndex + 1f) / quiz.Questions.Count * 100); }
+
+
+    private async Task OnCopyToClipboard()
+    {
+        await ClipboardService.WriteTextAsync(quiz.JoinCode);
+        copyTooltip = "Copied";
+        copied = true;
+    }
 }
